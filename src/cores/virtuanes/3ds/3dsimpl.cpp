@@ -36,13 +36,13 @@
 #include "shaderslow_shbin.h"
 #include "shaderslow2_shbin.h"
 
-#include "MMU.h"
-#include "APU.h"
-#include "PPU.h"
-#include "ROM.h"
-#include "NES.h"
-#include "Pad.h"
-#include "Config.h"
+#include "../NES/MMU.h"
+#include "../NES/APU.h"
+#include "../NES/PPU.h"
+#include "../NES/ROM.h"
+#include "../NES/Nes.h"
+#include "../NES/PAD.h"
+#include "../Config.h"
 #include "palette.h"
 
 #define SETTINGS_ALLSPRITES         0

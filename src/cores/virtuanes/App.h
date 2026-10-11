@@ -6,10 +6,10 @@
 #define	__CAPP_INCLUDED__
 
 #define	WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "Windows.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "Typedef.h"
+#include "TypeDef.h"
 
 
 #define	ERRORSTRING_MAX	32

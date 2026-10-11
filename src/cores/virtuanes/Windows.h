@@ -4,7 +4,7 @@
 #ifndef	__WINDOWS_INCLUDED__
 #define	__WINDOWS_INCLUDED__
 
-#include "Typedef.h"
+#include "TypeDef.h"
 // stubs
 typedef char *LPSTR;
 

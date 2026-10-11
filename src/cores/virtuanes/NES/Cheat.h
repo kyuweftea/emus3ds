@@ -1,7 +1,7 @@
 #ifndef	__CEHAT_INCLUDED__
 #define	__CEHAT_INCLUDED__
 
-#include "typedef.h"
+#include "TypeDef.h"
 
 #include <string>
 using namespace std;

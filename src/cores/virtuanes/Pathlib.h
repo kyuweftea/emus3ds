@@ -5,8 +5,8 @@
 #define	__CPATHLIB_INCLUDED__
 
 #define	WIN32_LEAN_AND_MEAN
-#include "Typedef.h"
-#include <windows.h>
+#include "TypeDef.h"
+#include "Windows.h"
 #include <stdio.h>
 #include <stdlib.h>
 //#include <shlobj.h>

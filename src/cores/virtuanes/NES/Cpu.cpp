@@ -7,24 +7,24 @@
 /*----------------------------------------------------------------------*/
 /*--------------[ INCLUDE               ]-------------------------------*/
 #define	WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "Windows.h"
 
 #include "VirtuaNESres.h"
 
-#include "typedef.h"
-#include "macro.h"
+#include "TypeDef.h"
+#include "Macro.h"
 
 #include "DebugOut.h"
 #include "App.h"
 #include "Config.h"
 
-#include "nes.h"
-#include "mmu.h"
-#include "cpu.h"
-#include "ppu.h"
-#include "apu.h"
-#include "rom.h"
-#include "mapper.h"
+#include "NES/Nes.h"
+#include "NES/MMU.h"
+#include "NES/CPU.h"
+#include "NES/PPU.h"
+#include "NES/APU.h"
+#include "NES/ROM.h"
+#include "NES/Mapper/Mapper.h"
 
 #include "3dsemu.h"
 #include "3dsmain.h"

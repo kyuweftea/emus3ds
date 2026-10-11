@@ -9,8 +9,8 @@
 #ifndef	__PAD_INCLUDED__
 #define	__PAD_INCLUDED__
 
-#include "typedef.h"
-#include "macro.h"
+#include "../TypeDef.h"
+#include "../Macro.h"
 
 // class prototypes
 class	NES;
@@ -137,26 +137,26 @@ protected:
 private:
 };
 
-#include "EXPAD.h"
-#include "EXPAD_Zapper.h"
-#include "EXPAD_Paddle.h"
-#include "EXPAD_HyperShot.h"
-#include "EXPAD_Keyboard.h"
-#include "EXPAD_Supor_Keyboard.h"
-#include "EXPAD_CrazyClimber.h"
-#include "EXPAD_Toprider.h"
-#include "EXPAD_SpaceShadowGun.h"
+#include "PadEX/EXPAD.h"
+#include "PadEX/EXPAD_Zapper.h"
+#include "PadEX/EXPAD_Paddle.h"
+#include "PadEX/EXPAD_HyperShot.h"
+#include "PadEX/EXPAD_Keyboard.h"
+#include "PadEX/EXPAD_Supor_Keyboard.h"
+#include "PadEX/EXPAD_CrazyClimber.h"
+#include "PadEX/EXPAD_Toprider.h"
+#include "PadEX/EXPAD_SpaceShadowGun.h"
 
-#include "EXPAD_FamlyTrainer.h"
-#include "EXPAD_ExcitingBoxing.h"
-#include "EXPAD_Mahjang.h"
-#include "EXPAD_OekakidsTablet.h"
-#include "EXPAD_TurboFile.h"
+#include "PadEX/EXPAD_FamlyTrainer.h"
+#include "PadEX/EXPAD_ExcitingBoxing.h"
+#include "PadEX/EXPAD_Mahjang.h"
+#include "PadEX/EXPAD_OekakidsTablet.h"
+#include "PadEX/EXPAD_TurboFile.h"
 
-#include "EXPAD_VSUnisystem.h"
-#include "EXPAD_VSZapper.h"
+#include "PadEX/EXPAD_VSUnisystem.h"
+#include "PadEX/EXPAD_VSZapper.h"
 
-#include "EXPAD_Gyromite.h"
+#include "PadEX/EXPAD_Gyromite.h"
 
 #endif	// !__PAD_INCLUDED__
 

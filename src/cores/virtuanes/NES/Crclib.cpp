@@ -1,7 +1,7 @@
 //
 // CRC�`�F�b�N�p���C�u�����N���X
 //
-#include "Typedef.h"
+#include "TypeDef.h"
 #include "Crclib.h"
 
 BOOL	CRC::m_Init = FALSE;

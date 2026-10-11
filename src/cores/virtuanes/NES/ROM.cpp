@@ -6,31 +6,31 @@
 //                                               last modify ----/--/-- //
 //////////////////////////////////////////////////////////////////////////
 #define	WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "../Windows.h"
 #include <stdio.h>
 #include <stdlib.h>
 //#include <mbstring.h>
 
-#include "typedef.h"
-#include "macro.h"
+#include "../TypeDef.h"
+#include "../Macro.h"
 
-#include "VirtuaNESres.h"
+#include "../VirtuaNESres.h"
 
-#include "DebugOut.h"
-#include "App.h"
+#include "../DebugOut.h"
+#include "../App.h"
 //#include "Plugin.h"
-#include "Pathlib.h"
+#include "../Pathlib.h"
 #include "Crclib.h"
-#include "Config.h"
+#include "../Config.h"
 
 //#include "Archive.h"
 
-#include "rom.h"
-#include "romdb.h"
-#include "mmu.h"
-#include "mapper.h"
+#include "ROM.h"
+#include "ROMDB.h"
+#include "MMU.h"
+#include "Mapper/Mapper.h"
 
-#include "ips.h"
+#include "IPS.h"
 #include "3dsdbg.h"
 
 const char* img_fname;	//for bbk

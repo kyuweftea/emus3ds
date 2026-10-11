@@ -6,10 +6,10 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdio.h"
-#include "typedef.h"
-#include "macro.h"
-#include "mmu_fceux.h"
-#include "mmu.h"
+#include "../TypeDef.h"
+#include "../Macro.h"
+#include "MMU_FCEUX.h"
+#include "MMU.h"
 
 // For compatibility with FCEUX mappers
 // 

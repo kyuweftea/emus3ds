@@ -9,19 +9,19 @@
 #define	__APU_INCLUDED__
 
 #define	WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "Windows.h"
 #include <math.h>
 
-#include "typedef.h"
-#include "macro.h"
+#include "TypeDef.h"
+#include "Macro.h"
 
-#include "APU_INTERNAL.h"
-#include "APU_VRC6.h"
-#include "APU_VRC7.h"
-#include "APU_MMC5.h"
-#include "APU_FDS.h"
-#include "APU_N106.h"
-#include "APU_FME7.h"
+#include "ApuEX/APU_INTERNAL.h"
+#include "ApuEX/APU_VRC6.h"
+#include "ApuEX/APU_VRC7.h"
+#include "ApuEX/APU_MMC5.h"
+#include "ApuEX/APU_FDS.h"
+#include "ApuEX/APU_N106.h"
+#include "ApuEX/APU_FME7.h"
 
 //#define	QUEUE_LENGTH	4096
 #define	QUEUE_LENGTH	8192

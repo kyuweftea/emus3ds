@@ -1,22 +1,22 @@
-#include <windows.h>
+#include "../../Windows.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "DebugOut.h"
-#include "typedef.h"
-#include "macro.h"
+#include "../../DebugOut.h"
+#include "../../TypeDef.h"
+#include "../../Macro.h"
 
-#include "nes.h"
-#include "mmu.h"
-#include "cpu.h"
-#include "ppu.h"
-#include "apu.h"
-#include "pad.h"
-#include "rom.h"
+#include "../Nes.h"
+#include "../MMU.h"
+#include "../CPU.h"
+#include "../PPU.h"
+#include "../APU.h"
+#include "../PAD.h"
+#include "../ROM.h"
 
-#include "mapper.h"
+#include "Mapper.h"
 
-#include "Config.h"
+#include "../../Config.h"
 
 extern	BYTE MMC3_cmd;
 extern	BYTE MMC3_DRegBuf[8];

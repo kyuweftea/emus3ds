@@ -7,18 +7,18 @@
 /*----------------------------------------------------------------------*/
 /*--------------[ INCLUDE               ]-------------------------------*/
 #define	WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "../Windows.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "DebugOut.h"
-#include "typedef.h"
-#include "macro.h"
+#include "../DebugOut.h"
+#include "../TypeDef.h"
+#include "../Macro.h"
 
-#include "nes.h"
-#include "mmu.h"
+#include "../NES/Nes.h"
+#include "../NES/MMU.h"
 
-#include "mapper.h"
+#include "Mapper/Mapper.h"
 
 #include <string.h>
 const BOARDINFO BoardInfo[]=

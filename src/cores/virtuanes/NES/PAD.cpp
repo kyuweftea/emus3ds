@@ -6,22 +6,22 @@
 //                                               last modify ----/--/-- //
 //////////////////////////////////////////////////////////////////////////
 #define	WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include "typedef.h"
-#include "macro.h"
+#include "../Windows.h"
+#include "../TypeDef.h"
+#include "../Macro.h"
 
-#include "DebugOut.h"
-#include "Config.h"
+#include "../DebugOut.h"
+#include "../Config.h"
 
 //#include "DirectDraw.h"
 //#include "DirectInput.h"
 
-#include "nes.h"
-#include "mmu.h"
-#include "cpu.h"
-#include "ppu.h"
-#include "pad.h"
-#include "rom.h"
+#include "Nes.h"
+#include "MMU.h"
+#include "CPU.h"
+#include "PPU.h"
+#include "PAD.h"
+#include "ROM.h"
 
 PAD::PAD( NES* parent ) : nes( parent )
 {
@@ -681,22 +681,22 @@ void	PAD::NsfSub()
 		nsfbit &= ~((1<<4)|(1<<5));
 }
 
-#include "EXPAD_Zapper.cpp"
-#include "EXPAD_Paddle.cpp"
-#include "EXPAD_HyperShot.cpp"
-#include "EXPAD_Keyboard.cpp"
-#include "EXPAD_Supor_Keyboard.cpp"
-#include "EXPAD_CrazyClimber.cpp"
-#include "EXPAD_Toprider.cpp"
-#include "EXPAD_SpaceShadowGun.cpp"
+#include "PadEX/EXPAD_Zapper.cpp"
+#include "PadEX/EXPAD_Paddle.cpp"
+#include "PadEX/EXPAD_HyperShot.cpp"
+#include "PadEX/EXPAD_Keyboard.cpp"
+#include "PadEX/EXPAD_Supor_Keyboard.cpp"
+#include "PadEX/EXPAD_CrazyClimber.cpp"
+#include "PadEX/EXPAD_Toprider.cpp"
+#include "PadEX/EXPAD_SpaceShadowGun.cpp"
 
-#include "EXPAD_FamlyTrainer.cpp"
-#include "EXPAD_ExcitingBoxing.cpp"
-#include "EXPAD_Mahjang.cpp"
-#include "EXPAD_OekakidsTablet.cpp"
-#include "EXPAD_TurboFile.cpp"
+#include "PadEX/EXPAD_FamlyTrainer.cpp"
+#include "PadEX/EXPAD_ExcitingBoxing.cpp"
+#include "PadEX/EXPAD_Mahjang.cpp"
+#include "PadEX/EXPAD_OekakidsTablet.cpp"
+#include "PadEX/EXPAD_TurboFile.cpp"
 
-#include "EXPAD_VSUnisystem.cpp"
-#include "EXPAD_VSZapper.cpp"
+#include "PadEX/EXPAD_VSUnisystem.cpp"
+#include "PadEX/EXPAD_VSZapper.cpp"
 
-#include "EXPAD_Gyromite.cpp"
+#include "PadEX/EXPAD_Gyromite.cpp"

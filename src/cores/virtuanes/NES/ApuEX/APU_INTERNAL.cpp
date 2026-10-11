@@ -5,16 +5,16 @@
 //                                               written     2002/06/27 //
 //                                               last modify ----/--/-- //
 //////////////////////////////////////////////////////////////////////////
-#include "DebugOut.h"
-#include "Pathlib.h"
-#include "Config.h"
+#include "../../DebugOut.h"
+#include "../../Pathlib.h"
+#include "../../Config.h"
 
 #include "APU_INTERNAL.h"
 
-#include "state.h"
-#include "rom.h"
-#include "mmu.h"
-#include "ppu.h"
+#include "../State.h"
+#include "../ROM.h"
+#include "../MMU.h"
+#include "../PPU.h"
 
 
 // Dummy

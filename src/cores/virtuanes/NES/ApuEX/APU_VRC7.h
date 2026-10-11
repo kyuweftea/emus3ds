@@ -9,14 +9,14 @@
 #define	__APU_VRC7_INCLUDED__
 
 #define	WIN32_LEAN_AND_MEAN
-#include "windows.h"
+#include "../Windows.h"
 
-#include "typedef.h"
-#include "macro.h"
+#include "../TypeDef.h"
+#include "../Macro.h"
 
 #include "APU_INTERFACE.h"
 
-#include "emu2413.h"
+#include "emu2413/emu2413.h"
 
 class	APU_VRC7 : public APU_INTERFACE
 {

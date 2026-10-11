@@ -9,8 +9,8 @@
 #ifndef	__MMU_INCLUDED__
 #define	__MMU_INCLUDED__
 
-#include "typedef.h"
-#include "macro.h"
+#include "TypeDef.h"
+#include "Macro.h"
 
 extern	BYTE	nnn;
 
