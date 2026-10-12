@@ -6,6 +6,21 @@
 #include "3dsmatrix.h"
 #include "3dstypes.h"
 
+#ifndef PRESENTER_DEBUG
+#define PRESENTER_DEBUG 1
+#endif
+
+extern int presenterSwapCount;
+extern int presenterParityMismatches;
+extern int presenterFirstMismatchSwap;
+extern int presenterInitialDerivedId;
+extern int presenterEyeTransferCount[2];
+
+#ifdef __cplusplus
+extern "C" void presenterConsoleInit(gfxScreen_t screen, PrintConsole* console);
+#else
+extern void presenterConsoleInit(gfxScreen_t screen, PrintConsole* console);
+#endif
 
 typedef struct
 {
@@ -102,6 +117,9 @@ void gpu3dsWaitEvent(GSPGPU_Event id, u64 timeInMilliseconds);
 
 void gpu3dsSetParallaxBarrier(bool enable);
 void gpu3dsCheckSlider();
+u8* gpu3dsGetTopScreenBuffer(bool backBuffer);
+void gpu3dsSetPresenterMenuMode(bool menuMode);
+void gpu3dsSetStereoEffective(bool stereoEffective);
 
 void gpu3dsAllocVertexList(SVertexList *list, int sizeInBytes, int vertexSize,
     u8 totalAttributes, u64 attributeFormats);
@@ -136,9 +154,9 @@ void gpu3dsFlush();
 void gpu3dsWaitForPreviousFlush();
 
 void gpu3dsClearRenderTarget();
-void gpu3dsTransferToScreenBuffer(bool waitFor3D = true);
+void gpu3dsTransferToScreenBuffer(bool waitFor3D = true, bool rightEye = false);
 void gpu3dsSwapVertexListForNextFrame(SVertexList *list);
-void gpu3dsSwapScreenBuffers();
+extern "C" void gpu3dsSwapScreenBuffers();
 
 void gpu3dsEnableAlphaTestNotEqualsZero();
 void gpu3dsEnableAlphaTestEqualsOne();

@@ -70,6 +70,7 @@ SMenuItem optionsForOk[] = {
 void menu3dsSetTransferGameScreen(bool transfer)
 {
     transferGameScreen = transfer;
+    gpu3dsSetPresenterMenuMode(true);
     if (transfer)
         transferGameScreenCount = 2;
     else
@@ -96,6 +97,7 @@ void menu3dsSwapBuffersAndWaitForVBlank()
     if (transferGameScreenCount)
     {
         gpu3dsTransferToScreenBuffer();
+		gpu3dsSwapScreenBuffers();
 		if (emulator.isReal3DS)
 			gspWaitForPPF();
         transferGameScreenCount --;
@@ -103,7 +105,7 @@ void menu3dsSwapBuffersAndWaitForVBlank()
     if (swapBuffer)
     {
         gfxFlushBuffers();
-        gfxSwapBuffers();
+        gpu3dsSwapScreenBuffers();
         gspWaitForVBlank();
     }
     else
@@ -1224,7 +1226,7 @@ bool menu3dsTakeScreenshot(const char* path)
     *(u32*)&tempbuf[0x3E] = 0x0000001F;
     *(u32*)&tempbuf[0x42] = 0x00000000;
 
-    u8* framebuf = (u8*)gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
+    u8* framebuf = gpu3dsGetTopScreenBuffer(false);
     for (y = 0; y < 240; y++)
     {
         for (x = 0; x < 400; x++)

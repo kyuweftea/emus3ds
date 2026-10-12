@@ -15,6 +15,10 @@ typedef struct
 
 //-----------------------------------------------------------------------------
 static int                      videoBufferIndex = 0;
+static bool                     videoSoftwareBufferEye[2] = { false, false };
+static bool                     videoTextureEye[2] = { false, false };
+static bool                     renderTargetEye = false;
+static bool                     transferEye = false;
 static int                      videoBufferWidth = 0;
 static int                      videoBufferHeight = 0;
 
@@ -160,6 +164,28 @@ void video3dsStartNewSoftwareRenderedFrame()
     videoBufferIndex = videoBufferIndex ^ 1;
 }
 
+void video3dsSetCurrentSoftwareBufferEye(bool rightEye)
+{
+    videoSoftwareBufferEye[videoBufferIndex] = rightEye;
+}
+
+void video3dsCapturePreviousTextureEye()
+{
+    // The draw uses the previous texture, whose tag was copied with its pixels.
+    renderTargetEye = videoTextureEye[videoBufferIndex ^ 1];
+}
+
+void video3dsSetTransferEye(bool stereoEffective)
+{
+    // Keep the image tag intact; slider/game transitions only coerce this transfer.
+    transferEye = stereoEffective && renderTargetEye;
+}
+
+bool video3dsGetTransferEye()
+{
+    return transferEye;
+}
+
 //-----------------------------------------------------------------------------
 // Swaps the software buffers and textures.
 //-----------------------------------------------------------------------------
@@ -175,10 +201,11 @@ void video3dsStartNewHardwareRenderedFrame()
 // Transfer the screen from the frame buffer and swap. 
 // This should be called as soon as possible in impl3dsEmulationRunOneFrame.
 //-----------------------------------------------------------------------------
-void video3dsTransferFrameBufferToScreenAndSwap()
+void video3dsTransferFrameBufferToScreenAndSwap(bool stereoEffective)
 {
+    video3dsSetTransferEye(stereoEffective);
     t3dsStartTiming(16, "Transfer");
-    gpu3dsTransferToScreenBuffer();	
+    gpu3dsTransferToScreenBuffer(true, video3dsGetTransferEye());
     t3dsEndTiming(16);
 
     t3dsStartTiming(19, "SwapBuffers");
@@ -192,6 +219,8 @@ void video3dsTransferFrameBufferToScreenAndSwap()
 //-----------------------------------------------------------------------------
 void video3dsCopySoftwareBufferToTexture()
 {
+    videoTextureEye[videoBufferIndex] = videoSoftwareBufferEye[videoBufferIndex];
+
     t3dsStartTiming(11, "FlushDataCache");
     GSPGPU_FlushDataCache(videoSoftwareBuffer[videoBufferIndex], videoBufferWidth * videoBufferHeight * videoSoftwareBufferBitDepth / 8);
     t3dsEndTiming(11);

@@ -26,7 +26,26 @@ bool somethingWasFlushed = false;
 
 extern u8* gfxTopRightFramebuffers[2];
 extern u8* gfxTopLeftFramebuffers[2];
-u8* gfxOldTopRightFramebuffers[2];
+static const int GPU3DS_TOP_POOL_SIZE = 2;
+static u8* gfxOldTopLeftFramebuffers[2];
+static u8* gfxOldTopRightFramebuffers[2];
+static u8* topScreenPool[2][GPU3DS_TOP_POOL_SIZE];
+static int topScreenShown[2] = { 0, 0 };
+static int topScreenBackId = 1;
+static int pendingTopScreenEye = 0;
+static int pendingTopScreenSlot = 0;
+static bool pendingTopScreenBuffer = false;
+static bool presenterMenuMode = true;
+static bool rightEyeHasImage = false;
+static bool presenterStereoEffective = false;
+
+#if PRESENTER_DEBUG
+int presenterSwapCount = 0;
+int presenterParityMismatches = 0;
+int presenterFirstMismatchSwap = -1;
+int presenterInitialDerivedId = -1;
+#endif
+int presenterEyeTransferCount[2] = { 0, 0 };
 
 extern "C" void gfxSetFramebufferInfo(gfxScreen_t screen, u8 id);
 extern "C" void gfxWriteFramebufferInfo(gfxScreen_t screen);
@@ -157,40 +176,94 @@ void gpu3dsSetParallaxBarrier(bool enable)
 // Sets the 2D screen mode based on the 3D slider.
 // Taken from RetroArch.
 //---------------------------------------------------------
-float prevSliderVal = -1;
 void gpu3dsCheckSlider()
 {
-    float sliderVal = *(float*)0x1FF81080;
+    // Retained for the shared emulator loop; VirtuaNES applies slider state
+    // together with device activity once per call to impl3dsEmulationRunOneFrame.
+}
 
-    if (sliderVal != prevSliderVal)
+static void presenterGetShownBuffers(u8** left, u8** right);
+
+static void gpu3dsSelectPendingTopBuffer(int eye)
+{
+    pendingTopScreenEye = eye;
+    pendingTopScreenSlot = (topScreenShown[eye] + 1) % GPU3DS_TOP_POOL_SIZE;
+    pendingTopScreenBuffer = true;
+}
+
+u8* gpu3dsGetTopScreenBuffer(bool backBuffer)
+{
+    if (backBuffer)
     {
-        gfxTopRightFramebuffers[0] = gfxTopLeftFramebuffers[0];
-        gfxTopRightFramebuffers[1] = gfxTopLeftFramebuffers[1];
-        
-        if (sliderVal == 0)
-        {
-            gpu3dsSetParallaxBarrier(false);
-        }
-        else if (sliderVal < 0.3)
-        {
-            if (!isNew3DS)
-            {
-                gfxTopRightFramebuffers[0] = gfxOldTopRightFramebuffers[0];
-                gfxTopRightFramebuffers[1] = gfxOldTopRightFramebuffers[1];
-            }
-            gpu3dsSetParallaxBarrier(false);
-        }
-        else if (sliderVal < 0.6)
-            gpu3dsSetParallaxBarrier(false);
-        else
-            gpu3dsSetParallaxBarrier(true);
-
-        u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
-        int b = fb == gfxTopLeftFramebuffers[0] ? 0 : 1;
-        gfxSetFramebufferInfo(GFX_TOP, b);
-        gfxWriteFramebufferInfo(GFX_TOP);
+        gpu3dsSelectPendingTopBuffer(0);
+        return topScreenPool[0][pendingTopScreenSlot];
     }
-    prevSliderVal = sliderVal;
+    u8* left;
+    u8* right;
+    presenterGetShownBuffers(&left, &right);
+    return left;
+}
+
+void gpu3dsSetPresenterMenuMode(bool menuMode)
+{
+    presenterMenuMode = menuMode;
+    if( menuMode )
+        gpu3dsSetStereoEffective(false);
+}
+
+void gpu3dsSetStereoEffective(bool stereoEffective)
+{
+    stereoEffective = stereoEffective && !presenterMenuMode;
+    if( stereoEffective != presenterStereoEffective )
+    {
+        presenterStereoEffective = stereoEffective;
+        gpu3dsSetParallaxBarrier(stereoEffective);
+    }
+    if( !stereoEffective )
+        rightEyeHasImage = false;
+}
+
+static void presenterGetShownBuffers(u8** left, u8** right)
+{
+    *left = topScreenPool[0][topScreenShown[0]];
+    *right = (presenterStereoEffective && rightEyeHasImage)
+        ? topScreenPool[1][topScreenShown[1]] : *left;
+}
+
+static int presenterDeriveNextId()
+{
+    u8* saved0 = gfxTopLeftFramebuffers[0];
+    u8* saved1 = gfxTopLeftFramebuffers[1];
+
+    // gfxGetFramebuffer only returns this table entry; the sentinels are never
+    // dereferenced, and the original pointers are restored immediately.
+    gfxTopLeftFramebuffers[0] = (u8*)0x1;
+    gfxTopLeftFramebuffers[1] = (u8*)0x2;
+    u8* nextBuffer = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
+    gfxTopLeftFramebuffers[0] = saved0;
+    gfxTopLeftFramebuffers[1] = saved1;
+
+    if (nextBuffer == (u8*)0x1)
+        return 0;
+    if (nextBuffer == (u8*)0x2)
+        return 1;
+    return -1;
+}
+
+extern "C" void presenterConsoleInit(gfxScreen_t screen, PrintConsole* console)
+{
+    // consoleInit calls gfxSwapBuffersGpu even for the bottom console. Publish
+    // the currently shown images in both table slots so that hidden swap cannot
+    // expose stale pool contents. The pointers are existing pool buffers only.
+    u8* left;
+    u8* right;
+    presenterGetShownBuffers(&left, &right);
+    for (int slot = 0; slot < 2; slot++)
+    {
+        gfxTopLeftFramebuffers[slot] = left;
+        gfxTopRightFramebuffers[slot] = right;
+    }
+    consoleInit(screen, console);
 }
 
 void gpu3dsEnableDepthTestAndWriteColorAlphaOnly()
@@ -1059,21 +1132,56 @@ const uint32 GX_TRANSFER_SCREEN_FORMAT_VALUES[5]= {
     GX_TRANSFER_FMT_RGBA8, GX_TRANSFER_FMT_RGB8, GX_TRANSFER_FMT_RGB565, GX_TRANSFER_FMT_RGB5A1, GX_TRANSFER_FMT_RGBA4 };
 
 
-void gpu3dsTransferToScreenBuffer(bool waitFor3D)
+void gpu3dsTransferToScreenBuffer(bool waitFor3D, bool rightEye)
 {
     if (waitFor3D)
         gpu3dsWaitForPreviousFlush();
 
+    int eye = (rightEye && presenterStereoEffective && !presenterMenuMode) ? 1 : 0;
+    gpu3dsSelectPendingTopBuffer(eye);
+    presenterEyeTransferCount[eye]++;
+
     GX_DisplayTransfer(GPU3DS.frameBuffer, GX_BUFFER_DIM(240, 400),
-        (u32 *)gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL),
+        (u32 *)topScreenPool[pendingTopScreenEye][pendingTopScreenSlot],
         GX_BUFFER_DIM(240, 400),
         GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FRAMEBUFFER_FORMAT_VALUES[GPU3DS.frameBufferFormat]) |
         GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_SCREEN_FORMAT_VALUES[GPU3DS.screenFormat]));
 }
 
-void gpu3dsSwapScreenBuffers()
+extern "C" void gpu3dsSwapScreenBuffers()
 {
+    int derivedNextId = presenterDeriveNextId();
+#if PRESENTER_DEBUG
+    presenterSwapCount++;
+    if (derivedNextId != topScreenBackId)
+    {
+        presenterParityMismatches++;
+        if (presenterFirstMismatchSwap < 0)
+            presenterFirstMismatchSwap = presenterSwapCount;
+    }
+    // Resync shadow state before publishing. A normal swap below advances it
+    // to the other index; an unannounced libctru swap is caught on this check.
+#endif
+    topScreenBackId = derivedNextId;
+
+    if (pendingTopScreenBuffer)
+    {
+        topScreenShown[pendingTopScreenEye] = pendingTopScreenSlot;
+        if (pendingTopScreenEye == 1)
+            rightEyeHasImage = true;
+        pendingTopScreenBuffer = false;
+    }
+
+    // libctru copies these pointers BY VALUE into its framebuffer info.
+    // Fill the next table slot before its shared currentBuffer toggle.
+    u8* shownLeft;
+    u8* shownRight;
+    presenterGetShownBuffers(&shownLeft, &shownRight);
+    gfxTopLeftFramebuffers[derivedNextId] = shownLeft;
+    gfxTopRightFramebuffers[derivedNextId] = shownRight;
+
 	gfxSwapBuffersGpu();
+    topScreenBackId ^= 1;
     //sf2d_pool_reset();
 }
 
@@ -1151,16 +1259,30 @@ bool gpu3dsInitialize()
     APT_CheckNew3DS(&val);
     isNew3DS = (val != 0);
 
-    gfxOldTopRightFramebuffers[0] = gfxTopRightFramebuffers[0];
-    gfxOldTopRightFramebuffers[1] = gfxTopRightFramebuffers[1];
-    for (int i = 0; i < 400 * 240 * 4; i++)
+    // Keep the four libctru allocations as two per-eye pools; do not allocate
+    // additional screen buffers on the memory-constrained Old 3DS.
+    for (int slot = 0; slot < GPU3DS_TOP_POOL_SIZE; slot++)
     {
-        gfxOldTopRightFramebuffers[0][i] = 0;
-        gfxOldTopRightFramebuffers[1][i] = 0;
+        gfxOldTopLeftFramebuffers[slot] = gfxTopLeftFramebuffers[slot];
+        gfxOldTopRightFramebuffers[slot] = gfxTopRightFramebuffers[slot];
+        topScreenPool[0][slot] = gfxOldTopLeftFramebuffers[slot];
+        topScreenPool[1][slot] = gfxOldTopRightFramebuffers[slot];
     }
-
-    gfxTopRightFramebuffers[0] = gfxTopLeftFramebuffers[0];
-    gfxTopRightFramebuffers[1] = gfxTopLeftFramebuffers[1];
+    topScreenShown[0] = topScreenShown[1] = 0;
+    topScreenBackId = 1; // gfxInit starts at entry 0; the first GPU swap selects 1.
+    pendingTopScreenBuffer = false;
+    rightEyeHasImage = false;
+    presenterMenuMode = true;
+    for (int slot = 0; slot < 2; slot++)
+    {
+        gfxTopLeftFramebuffers[slot] = topScreenPool[0][0];
+        gfxTopRightFramebuffers[slot] = topScreenPool[0][0];
+    }
+    gfxSetFramebufferInfo(GFX_TOP, 0);
+    gfxWriteFramebufferInfo(GFX_TOP);
+#if PRESENTER_DEBUG
+    presenterInitialDerivedId = presenterDeriveNextId();
+#endif
 
     // Create the frame and depth buffers for the top screen.
     //
@@ -1184,7 +1306,7 @@ bool gpu3dsInitialize()
 
     // Initialize the bottom screen for console output.
     //
-    consoleInit(GFX_BOTTOM, NULL);
+    presenterConsoleInit(GFX_BOTTOM, NULL);
 
     // Create the command buffers
     //
@@ -1299,7 +1421,10 @@ void gpu3dsFinalize()
     // Restore the old frame buffers so that gfxExit can properly
     // free them.
     //
-    gfxTopRightFramebuffers[0] = gfxOldTopRightFramebuffers[0];
-    gfxTopRightFramebuffers[1] = gfxOldTopRightFramebuffers[1];
+    for (int slot = 0; slot < GPU3DS_TOP_POOL_SIZE; slot++)
+    {
+        gfxTopLeftFramebuffers[slot] = gfxOldTopLeftFramebuffers[slot];
+        gfxTopRightFramebuffers[slot] = gfxOldTopRightFramebuffers[slot];
+    }
 	gfxExit();
 }

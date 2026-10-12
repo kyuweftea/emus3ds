@@ -2662,7 +2662,9 @@ void	NES::WriteState( FILE* fp )
 	}
 
 	// EXCTR STATE
-	if( pad->GetExController() ) {
+	if( pad->GetExController()
+	 && (pad->GetExController() != PAD::EXCONTROLLER_FAMICOM3D
+	  || pad->GetFamicom3DActive()) ) {
 		EXCTRSTAT exctr;
 
 		::ZeroMemory( &hdr, sizeof(BLOCKHDR) );

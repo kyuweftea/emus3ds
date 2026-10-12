@@ -23,6 +23,13 @@
 #include "PAD.h"
 #include "ROM.h"
 
+static BOOL Famicom3DEnabledForRom( ROM* rom )
+{
+	// TODO: Add ROM-CRC-based activation once the supported ROMs are known.
+	(void)rom;
+	return TRUE;
+}
+
 PAD::PAD( NES* parent ) : nes( parent )
 {
 	excontroller_select = 0;
@@ -50,6 +57,9 @@ PAD::~PAD()
 
 void	PAD::Reset()
 {
+	// Re-detect the expansion device for the current ROM on every reset.
+	SetExController( EXCONTROLLER_NONE );
+
 	pad1bit = pad2bit = 0;
 	bStrobe = FALSE;
 
@@ -197,6 +207,11 @@ void	PAD::Reset()
 //	if( crc == 0x4ee735c1 ) {	// Stack-Up (JU)
 //		SetExController( EXCONTROLLER_STACKUP );
 //	}
+
+	// Keep existing ROM-specific expansion devices higher priority.
+	if( excontroller_select == EXCONTROLLER_NONE && Famicom3DEnabledForRom( nes->rom ) ) {
+		SetExController( EXCONTROLLER_FAMICOM3D );
+	}
 }
 
 void	PAD::SetExController( INT type )
@@ -275,6 +290,9 @@ void	PAD::SetExController( INT type )
 		case	EXCONTROLLER_GYROMITE:
 			expad = new EXPAD_Gyromite( nes );
 			break;
+		case	EXCONTROLLER_FAMICOM3D:
+			expad = new EXPAD_Famicom3D( nes );
+			break;
 
 // Buggy:(
 //		case	EXCONTROLLER_STACKUP:
@@ -289,6 +307,56 @@ void	PAD::SetExController( INT type )
 		expad->Reset();
 	}
 }
+
+BOOL PAD::GetFamicom3DActive()
+{
+	return excontroller_select == EXCONTROLLER_FAMICOM3D && expad
+		? ((EXPAD_Famicom3D*)expad)->IsActive() : FALSE;
+}
+
+BOOL PAD::GetFamicom3DRightEye()
+{
+	return excontroller_select == EXCONTROLLER_FAMICOM3D && expad
+		? ((EXPAD_Famicom3D*)expad)->IsRightEye() : FALSE;
+}
+
+void PAD::AdvanceFamicom3DFrame()
+{
+	if( excontroller_select == EXCONTROLLER_FAMICOM3D && expad ) {
+		((EXPAD_Famicom3D*)expad)->AdvanceFrame();
+	}
+}
+
+#if FAMICOM3D_DEBUG
+void PAD::RecordFamicom3DFrameStart()
+{
+	if( excontroller_select == EXCONTROLLER_FAMICOM3D && expad )
+		((EXPAD_Famicom3D*)expad)->RecordFrameStart();
+}
+
+void PAD::GetFamicom3DDebugInfo( INT transitions[3], INT& writes,
+	INT& lastChangeScanline, INT& minChangeScanline, INT& maxChangeScanline,
+	char eyeHistory[17], INT& active, INT& framesSinceChange )
+{
+	if( excontroller_select == EXCONTROLLER_FAMICOM3D && expad ) {
+		((EXPAD_Famicom3D*)expad)->GetDebugInfo( transitions, writes,
+			lastChangeScanline, minChangeScanline, maxChangeScanline,
+			eyeHistory, active, framesSinceChange );
+	} else {
+		transitions[0] = transitions[1] = transitions[2] = 0;
+		writes = 0;
+		lastChangeScanline = minChangeScanline = maxChangeScanline = -1;
+		eyeHistory[0] = '\0';
+		active = framesSinceChange = 0;
+	}
+}
+
+void PAD::ResetFamicom3DDebugWindow()
+{
+	if( excontroller_select == EXCONTROLLER_FAMICOM3D && expad )
+		((EXPAD_Famicom3D*)expad)->ResetDebugWindow();
+}
+#endif
 
 DWORD	PAD::GetSyncData()
 {
@@ -352,6 +420,9 @@ DWORD	data = 0;
 		case	EXCONTROLLER_MAHJANG:
 			data = (DWORD)expad->GetSyncData( 0 );
 			break;
+		case	EXCONTROLLER_FAMICOM3D:
+			data = (DWORD)expad->GetSyncData( 0 );
+			break;
 
 		default:
 			break;
@@ -405,6 +476,9 @@ void	PAD::SetSyncExData( DWORD data )
 			expad->SetSyncData( 0, (LONG)data );
 			break;
 		case	EXCONTROLLER_MAHJANG:
+			expad->SetSyncData( 0, (LONG)data );
+			break;
+		case	EXCONTROLLER_FAMICOM3D:
 			expad->SetSyncData( 0, (LONG)data );
 			break;
 		default:
@@ -700,3 +774,4 @@ void	PAD::NsfSub()
 #include "PadEX/EXPAD_VSZapper.cpp"
 
 #include "PadEX/EXPAD_Gyromite.cpp"
+#include "PadEX/EXPAD_Famicom3D.cpp"

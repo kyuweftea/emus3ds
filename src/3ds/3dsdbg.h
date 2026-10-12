@@ -6,6 +6,14 @@
 #include "3dsemu.h"
 #include "stdio.h"
 
+#ifdef __cplusplus
+extern "C" void gpu3dsSwapScreenBuffers();
+extern "C" void presenterConsoleInit(gfxScreen_t screen, PrintConsole* console);
+#else
+extern void gpu3dsSwapScreenBuffers(void);
+extern void presenterConsoleInit(gfxScreen_t screen, PrintConsole* console);
+#endif
+
 
 #ifndef EMU_RELEASE
 /*
@@ -64,8 +72,8 @@
 
 #define CLEAR_BOTTOM_SCREEN \
     gfxSetDoubleBuffering(GFX_BOTTOM,false); \
-    gfxSwapBuffers(); \
-    consoleInit(GFX_BOTTOM, NULL); \
+    gpu3dsSwapScreenBuffers(); \
+    presenterConsoleInit(GFX_BOTTOM, NULL); \
     consoleClear(); \
 
 

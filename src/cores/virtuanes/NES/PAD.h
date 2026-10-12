@@ -9,6 +9,10 @@
 #ifndef	__PAD_INCLUDED__
 #define	__PAD_INCLUDED__
 
+#ifndef FAMICOM3D_DEBUG
+#define FAMICOM3D_DEBUG 1
+#endif
+
 #include "../TypeDef.h"
 #include "../Macro.h"
 
@@ -22,7 +26,7 @@ public:
 	PAD( NES* parent );
 	virtual	~PAD();
 
-// ÉÅÉìÉoä÷êî
+// ÔøΩÔøΩÔøΩÔøΩÔøΩoÔøΩ÷êÔøΩ
 	void	Reset();
 
 	// For movie
@@ -48,6 +52,16 @@ public:
 
 	void	SetExController( INT type );
 	INT	GetExController()	    { return excontroller_select; }
+	BOOL	GetFamicom3DActive();
+	BOOL	GetFamicom3DRightEye();
+	void	AdvanceFamicom3DFrame();
+#if FAMICOM3D_DEBUG
+	void	RecordFamicom3DFrameStart();
+	void	GetFamicom3DDebugInfo( INT transitions[3], INT& writes,
+		INT& lastChangeScanline, INT& minChangeScanline, INT& maxChangeScanline,
+		char eyeHistory[17], INT& active, INT& framesSinceChange );
+	void	ResetFamicom3DDebugWindow();
+#endif
 
 	BOOL	IsZapperMode() { return bZapperMode; };
 
@@ -91,6 +105,7 @@ public:
 		EXCONTROLLER_STACKUP,
 
 		EXCONTROLLER_SUPOR_KEYBOARD,
+		EXCONTROLLER_FAMICOM3D,
 	};
 
 	DWORD	pad1bit, pad2bit;
@@ -138,6 +153,7 @@ private:
 };
 
 #include "PadEX/EXPAD.h"
+#include "PadEX/EXPAD_Famicom3D.h"
 #include "PadEX/EXPAD_Zapper.h"
 #include "PadEX/EXPAD_Paddle.h"
 #include "PadEX/EXPAD_HyperShot.h"

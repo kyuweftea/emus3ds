@@ -4,6 +4,9 @@
 #include "3ds.h"
 #include "3dsdbg.h"
 
+extern void gpu3dsSwapScreenBuffers(void);
+extern void presenterConsoleInit(gfxScreen_t screen, PrintConsole* console);
+
 void debugWait()
 {                                                                       
     hidScanInput();                                                     
@@ -25,7 +28,7 @@ void debugWait()
 void clearBottomScreen()
 {
     gfxSetDoubleBuffering(GFX_BOTTOM,false); 
-    gfxSwapBuffers(); 
-    consoleInit(GFX_BOTTOM, NULL); 
+    gpu3dsSwapScreenBuffers(); 
+    presenterConsoleInit(GFX_BOTTOM, NULL); 
     consoleClear(); 
 }

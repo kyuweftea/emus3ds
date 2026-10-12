@@ -43,6 +43,12 @@ void *video3dsGetCurrentSoftwareBuffer();
 //-----------------------------------------------------------------------------
 void video3dsStartNewSoftwareRenderedFrame();
 
+// Eye metadata follows the same index as each software buffer and texture.
+void video3dsSetCurrentSoftwareBufferEye(bool rightEye);
+void video3dsCapturePreviousTextureEye();
+void video3dsSetTransferEye(bool stereoEffective);
+bool video3dsGetTransferEye();
+
 //-----------------------------------------------------------------------------
 // Swaps the software buffers and textures.
 //-----------------------------------------------------------------------------
@@ -52,7 +58,7 @@ void video3dsStartNewHardwareRenderedFrame();
 // Transfer the screen from the frame buffer and swap. 
 // This should be called as soon as possible in impl3dsEmulationRunOneFrame.
 //-----------------------------------------------------------------------------
-void video3dsTransferFrameBufferToScreenAndSwap();
+void video3dsTransferFrameBufferToScreenAndSwap(bool stereoEffective = false);
 
 //-----------------------------------------------------------------------------
 // Performs a transfer from the software buffer to the hardware texture,
