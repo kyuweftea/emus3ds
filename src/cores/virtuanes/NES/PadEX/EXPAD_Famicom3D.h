@@ -9,7 +9,7 @@ class EXPAD_Famicom3D : public EXPAD
 public:
 	enum {
 		FAMICOM3D_EYE_MASK = 0x02,
-		FAMICOM3D_ACTIVITY_FRAMES = 8
+		FAMICOM3D_ACTIVITY_FRAMES = 3
 	};
 
 	EXPAD_Famicom3D( NES* parent ) : EXPAD( parent ) { Reset(); }
