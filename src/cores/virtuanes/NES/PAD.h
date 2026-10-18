@@ -22,7 +22,7 @@ public:
 	PAD( NES* parent );
 	virtual	~PAD();
 
-// �����o�֐�
+// ƒƒ“ƒoŠÖ”
 	void	Reset();
 
 	// For movie

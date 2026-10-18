@@ -50,9 +50,6 @@ PAD::~PAD()
 
 void	PAD::Reset()
 {
-	// Re-detect the expansion device for the current ROM on every reset.
-	SetExController( EXCONTROLLER_NONE );
-
 	pad1bit = pad2bit = 0;
 	bStrobe = FALSE;
 
