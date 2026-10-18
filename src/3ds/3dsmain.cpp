@@ -15,7 +15,6 @@
 #include "3dstypes.h"
 #include "3dsexit.h"
 #include "3dsgpu.h"
-#include "PAD.h"
 #include "3dsopt.h"
 #include "3dssound.h"
 #include "3dsmenu.h"
@@ -36,12 +35,6 @@
 SEmulator emulator;
 
 int frameCount60 = 60;
-#if FAMICOM3D_DEBUG
-extern bool impl3dsGetFamicom3DDebugInfo(int transitions[3], int* writes,
-    int* lastChangeScanline, int* minChangeScanline, int* maxChangeScanline,
-    char eyeHistory[17], int* active, int* framesSinceChange);
-extern void impl3dsResetFamicom3DDebugWindow();
-#endif
 u64 frameCountTick = 0;
 int framesSkippedCount = 0;
 char *romFileName = 0;
@@ -838,49 +831,6 @@ void updateFrameCount()
             ui3dsDrawRect(2, 2, 200, 16, 0x000000);
             ui3dsDrawStringWithNoWrapping(2, 2, 200, 16, 0x7f7f7f, HALIGN_LEFT, frameCountBuffer);
         }
-
-#if PRESENTER_DEBUG
-        char presenterBuffer[64];
-        snprintf(presenterBuffer, sizeof(presenterBuffer), "S:%d R:%d F:%d I:%d E:%d/%d",
-            presenterSwapCount, presenterParityMismatches,
-            presenterFirstMismatchSwap, presenterInitialDerivedId,
-            presenterEyeTransferCount[0], presenterEyeTransferCount[1]);
-        ui3dsDrawRect(2, 18, 318, 32, 0x000000);
-        ui3dsDrawStringWithNoWrapping(2, 18, 318, 32, 0x7f7f7f, HALIGN_LEFT, presenterBuffer);
-#endif
-
-#if FAMICOM3D_DEBUG
-        int transitions[3], writes, lastChangeScanline, minChangeScanline, maxChangeScanline;
-        int active, framesSinceChange;
-        char eyeHistory[17];
-        if( impl3dsGetFamicom3DDebugInfo(transitions, &writes,
-            &lastChangeScanline, &minChangeScanline, &maxChangeScanline,
-            eyeHistory, &active, &framesSinceChange) ) {
-            char eyeLine[40];
-            char transitionLine[48];
-            if( framesSinceChange > 99 ) framesSinceChange = 99;
-            snprintf(eyeLine, sizeof(eyeLine), "%s A:%d G:%d",
-                eyeHistory, active, framesSinceChange);
-            ui3dsDrawRect(2, 34, 200, 48, 0x000000);
-            ui3dsDrawStringWithNoWrapping(2, 34, 200, 48, 0x7f7f7f, HALIGN_LEFT, eyeLine);
-
-            if( minChangeScanline < 0 ) {
-                snprintf(transitionLine, sizeof(transitionLine), "T%d/%d/%d W%d L- C%d",
-                    transitions[0], transitions[1], transitions[2], writes, lastChangeScanline);
-            } else {
-                snprintf(transitionLine, sizeof(transitionLine), "T%d/%d/%d W%d L%d-%d C%d",
-                    transitions[0], transitions[1], transitions[2], writes,
-                    minChangeScanline, maxChangeScanline, lastChangeScanline);
-            }
-            ui3dsDrawRect(2, 50, 200, 64, 0x000000);
-            ui3dsDrawStringWithNoWrapping(2, 50, 200, 64, 0x7f7f7f, HALIGN_LEFT, transitionLine);
-            impl3dsResetFamicom3DDebugWindow();
-        } else {
-            ui3dsDrawRect(2, 34, 200, 48, 0x000000);
-            ui3dsDrawStringWithNoWrapping(2, 34, 200, 48, 0x7f7f7f, HALIGN_LEFT, "3D: no device");
-            ui3dsDrawRect(2, 50, 200, 64, 0x000000);
-        }
-#endif
 
         frameCount60 = 60;
         framesSkippedCount = 0;

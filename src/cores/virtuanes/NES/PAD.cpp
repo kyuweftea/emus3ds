@@ -327,37 +327,6 @@ void PAD::AdvanceFamicom3DFrame()
 	}
 }
 
-#if FAMICOM3D_DEBUG
-void PAD::RecordFamicom3DFrameStart()
-{
-	if( excontroller_select == EXCONTROLLER_FAMICOM3D && expad )
-		((EXPAD_Famicom3D*)expad)->RecordFrameStart();
-}
-
-void PAD::GetFamicom3DDebugInfo( INT transitions[3], INT& writes,
-	INT& lastChangeScanline, INT& minChangeScanline, INT& maxChangeScanline,
-	char eyeHistory[17], INT& active, INT& framesSinceChange )
-{
-	if( excontroller_select == EXCONTROLLER_FAMICOM3D && expad ) {
-		((EXPAD_Famicom3D*)expad)->GetDebugInfo( transitions, writes,
-			lastChangeScanline, minChangeScanline, maxChangeScanline,
-			eyeHistory, active, framesSinceChange );
-	} else {
-		transitions[0] = transitions[1] = transitions[2] = 0;
-		writes = 0;
-		lastChangeScanline = minChangeScanline = maxChangeScanline = -1;
-		eyeHistory[0] = '\0';
-		active = framesSinceChange = 0;
-	}
-}
-
-void PAD::ResetFamicom3DDebugWindow()
-{
-	if( excontroller_select == EXCONTROLLER_FAMICOM3D && expad )
-		((EXPAD_Famicom3D*)expad)->ResetDebugWindow();
-}
-#endif
-
 DWORD	PAD::GetSyncData()
 {
 DWORD	ret;

@@ -6,16 +6,6 @@
 #include "3dsmatrix.h"
 #include "3dstypes.h"
 
-#ifndef PRESENTER_DEBUG
-#define PRESENTER_DEBUG 1
-#endif
-
-extern int presenterSwapCount;
-extern int presenterParityMismatches;
-extern int presenterFirstMismatchSwap;
-extern int presenterInitialDerivedId;
-extern int presenterEyeTransferCount[2];
-
 #ifdef __cplusplus
 extern "C" void presenterConsoleInit(gfxScreen_t screen, PrintConsole* console);
 #else

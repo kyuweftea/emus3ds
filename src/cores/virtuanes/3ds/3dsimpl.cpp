@@ -729,7 +729,6 @@ extern int frameCount60;
 void impl3dsEmulationRunOneFrame(bool firstFrame, bool skipDrawingFrame)
 {
 	t3dsStartTiming(1, "RunOneFrame");
-    // Evaluate once for this call; Phase 4 will also use this state for the barrier.
     bool stereoEffective = nes && nes->pad->GetFamicom3DActive()
         && (*(volatile float*)0x1FF81080 > 0.0f);
     gpu3dsSetStereoEffective(stereoEffective);
@@ -751,10 +750,6 @@ if (frameCount60 == 59)
 	if (nes)
 	{
 		impl3dsEmulationPollInput();
-#if FAMICOM3D_DEBUG
-        // Record the raw latched eye for every emulated frame, independent of rendering and slider state.
-        nes->pad->RecordFamicom3DFrameStart();
-#endif
         // Tag the PPU image with the eye latch as it stands at frame start.
         video3dsSetCurrentSoftwareBufferEye(
             stereoEffective && nes->pad->GetFamicom3DRightEye());
@@ -823,39 +818,6 @@ void impl3dsEmulationPaused()
         nes->SaveSRAM();
     }
 }
-
-#if FAMICOM3D_DEBUG
-bool impl3dsGetFamicom3DDebugInfo(int transitions[3], int* writes,
-    int* lastChangeScanline, int* minChangeScanline, int* maxChangeScanline,
-    char eyeHistory[17], int* active, int* framesSinceChange)
-{
-    if( !nes || !nes->pad || nes->pad->GetExController() != PAD::EXCONTROLLER_FAMICOM3D )
-        return false;
-
-    INT localTransitions[3];
-    INT localWrites, localLastChange, localMinChange, localMaxChange;
-    INT localActive, localFramesSinceChange;
-    nes->pad->GetFamicom3DDebugInfo( localTransitions, localWrites,
-        localLastChange, localMinChange, localMaxChange, eyeHistory,
-        localActive, localFramesSinceChange );
-    for( int bit = 0; bit < 3; bit++ )
-        transitions[bit] = localTransitions[bit];
-    *writes = localWrites;
-    *lastChangeScanline = localLastChange;
-    *minChangeScanline = localMinChange;
-    *maxChangeScanline = localMaxChange;
-    *active = localActive;
-    *framesSinceChange = localFramesSinceChange;
-    return true;
-}
-
-void impl3dsResetFamicom3DDebugWindow()
-{
-    if( nes && nes->pad )
-        nes->pad->ResetFamicom3DDebugWindow();
-}
-#endif
-
 
 //---------------------------------------------------------
 // This is called when the user chooses to save the state.
