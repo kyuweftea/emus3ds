@@ -178,8 +178,13 @@ void gpu3dsSetParallaxBarrier(bool enable)
 //---------------------------------------------------------
 void gpu3dsCheckSlider()
 {
-    // Retained for the shared emulator loop; VirtuaNES applies slider state
-    // together with device activity once per call to impl3dsEmulationRunOneFrame.
+    static float prevSliderVal = -1.0f;
+    float sliderVal = *(volatile float*)0x1FF81080;
+
+    // Enable only on a rising slider; slider zero is left to the system, independently of game, menu, and presenter mode.
+    if( sliderVal > 0.0f && prevSliderVal <= 0.0f )
+        gpu3dsSetParallaxBarrier(true);
+    prevSliderVal = sliderVal;
 }
 
 static void presenterGetShownBuffers(u8** left, u8** right);
@@ -215,10 +220,7 @@ void gpu3dsSetStereoEffective(bool stereoEffective)
 {
     stereoEffective = stereoEffective && !presenterMenuMode;
     if( stereoEffective != presenterStereoEffective )
-    {
         presenterStereoEffective = stereoEffective;
-        gpu3dsSetParallaxBarrier(stereoEffective);
-    }
     if( !stereoEffective )
         rightEyeHasImage = false;
 }
