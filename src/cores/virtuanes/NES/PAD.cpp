@@ -23,13 +23,6 @@
 #include "PAD.h"
 #include "ROM.h"
 
-static BOOL Famicom3DEnabledForRom( ROM* rom )
-{
-	// TODO: Add ROM-CRC-based activation once the supported ROMs are known.
-	(void)rom;
-	return TRUE;
-}
-
 PAD::PAD( NES* parent ) : nes( parent )
 {
 	excontroller_select = 0;
@@ -208,8 +201,20 @@ void	PAD::Reset()
 //		SetExController( EXCONTROLLER_STACKUP );
 //	}
 
-	// Keep existing ROM-specific expansion devices higher priority.
-	if( excontroller_select == EXCONTROLLER_NONE && Famicom3DEnabledForRom( nes->rom ) ) {
+	// Famicom 3D System cartridge games.
+	if( excontroller_select == EXCONTROLLER_NONE &&
+		(crc == 0x7D55CF29		// Attack Animal Gakuen
+		 || crc == 0xAB4AC985	// Cosmic Epsilon
+		 || crc == 0x02589598	// Highway Star
+		 || crc == 0xB39A3F5B) ) { // JJ: Tobidase Daisakusen Part II
+		SetExController( EXCONTROLLER_FAMICOM3D );
+	}
+
+	// Tobidase Daisakusen (J), an FDS game, uses anaglyph stereo, not the Famicom 3D System.
+	if( excontroller_select == EXCONTROLLER_NONE && nes->rom->GetMapperNo() == 20 &&
+		((nes->rom->GetMakerID() == 0xA4 && nes->rom->GetGameID() == 0x46414C20) // Falsion
+		 || (nes->rom->GetMakerID() == 0x01 && nes->rom->GetGameID() == 0x54445245) // Famicom Grand Prix II: 3D Hot Rally
+		 || (nes->rom->GetMakerID() == 0x0A && nes->rom->GetGameID() == 0x53414D20)) ) { // Fuuun Shourin Ken: Ankoku no Maou
 		SetExController( EXCONTROLLER_FAMICOM3D );
 	}
 }
