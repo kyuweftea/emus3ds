@@ -2,6 +2,8 @@
 
 VirtuaNES for 3DS (Famicom 3D) is a fork of bubble2k16's [VirtuaNES for 3DS](https://github.com/bubble2k16/emus3ds/blob/master/readme-virtuanes.md), adding optional stereoscopic 3D display for games supporting the Famicom 3D system. All other NES games play the same as in bubble2k16's release (in 2D).
 
+To install, download and unpack the zip file from the [latest release](https://github.com/kyuweftea/emus3ds/releases/latest) (or download and build this project), then follow either the Homebrew Launcher or CIA Version steps below.
+
 ### Homebrew Launcher:
 
 1. Copy virtuanes_3ds.3dsx, virtuanes_3ds.smdh and virtuanes_3ds_top.png into the /3ds/virtuanes_3ds folder on your SD card.
