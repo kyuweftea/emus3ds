@@ -27,9 +27,9 @@ include $(DEVKITARM)/3ds_rules
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
-APP_TITLE	:=	VirtuaNES for 3DS
+APP_TITLE	:=	VirtuaNES for 3DS (Famicom 3D)
 APP_DESCRIPTION	:=	High compatibility NES emulator for your old 3DS / 2DS.
-APP_AUTHOR	:=	bubble2k16
+APP_AUTHOR	:=	bubble2k16 & kyuweftea (3D mod)
 ASSETS		:=	src/cores/virtuanes/assets
 ICON		:=	$(ASSETS)/icon.png
 TARGET		:=	virtuanes_3ds

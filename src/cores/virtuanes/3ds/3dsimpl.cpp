@@ -330,7 +330,7 @@ char *impl3dsTitleImage = "./virtuanes_3ds_top.png";
 // The title that displays at the bottom right of the
 // menu.
 //---------------------------------------------------------
-char *impl3dsTitleText = "VirtuaNES for 3DS v1.02";
+char *impl3dsTitleText = "VirtuaNES for 3DS v1.02-3D.1";
 
 
 //---------------------------------------------------------
