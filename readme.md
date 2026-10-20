@@ -1,10 +1,6 @@
-## VirtuaNES for 3DS
+## VirtuaNES for 3DS (Famicom 3D)
 
-VirtuaNES for 3DS is a high compatibility NES emulator for your old 3DS or 2DS. It's not as accurate as FCEUX or Nestopia, but it runs at full 60 FPS for almost all games, and supports tonnes of mappers: MMC1,3,5,6; VRC1,2,3,4,6,7; and tonnes of other mappers. As a result, the library of games it supports are huge. 
-
-This 3DS version also fixes a few bugs from VirtuaNES's MMC5 mappers and even plays Rockman 4 Minus Infinity and Zelda Legend of Link hacks.
-
-It also runs on your New 3DS as well!
+VirtuaNES for 3DS (Famicom 3D) is a fork of bubble2k16's [VirtuaNES for 3DS](https://github.com/bubble2k16/emus3ds/blob/master/readme-virtuanes.md), adding optional stereoscopic 3D display for games supporting the Famicom 3D system. All other NES games play the same as in bubble2k16's release (in 2D).
 
 ### Homebrew Launcher:
 
@@ -14,7 +10,10 @@ It also runs on your New 3DS as well!
 
 ### CIA Version:
 
-1. Use your favorite CIA installer to install virtuanes_3ds.cia into your CFW. You can also use FBI to download from TitleDB.
+> [!CAUTION]
+> Following these steps will OVERWRITE any existing copy of VirtuaNES on your home screen. If you wish to try out this fork without removing your existing installation of VirtuaNES, use the Homebrew Launcher method above.
+
+1. Use your favorite CIA installer to install virtuanes_3ds.cia into your CFW.
 2. Place your ROMs inside any folder.
 3. Copy virtuanes_3ds_top.png to ROOT of your SD card.
 4. Exit your CIA installer and go to your CFW's home screen to launch the app.
@@ -31,25 +30,42 @@ It also runs on your New 3DS as well!
 3. Use Left/Right to change between ROM selection and emulator options.
 4. You can quit the emulator to your homebrew launcher / your CFW's home screen.
 
+### Activating Stereoscopic 3D
+
+1. Turn on 3D mode in-game. (Most Famicom 3D games toggle 3D mode when pressing SELECT during gameplay.)
+2. Turn on the Nintendo 3DS system's 3D slider.
+
 -------------------------------------------------------------------------------------------------------
 
 ## VirtuaNES Screenshots
 
-![alt tag](https://github.com/bubble2k16/emus3ds/blob/master/screenshots/VirtuaNES%20-%20Bionic%20Commando.bmp)
+> [!NOTE]
+> You can preview the following screenshots in 3D by crossing your eyes until the views align (ensure your page is zoomed out enough).
 
-![alt tag](https://github.com/bubble2k16/emus3ds/blob/master/screenshots/VirtuaNES%20-%20Gradius%20II.bmp)
+![Highway Star (R)](screenshots/VirtuaNES%20-%20Highway%20Star%20(R).bmp)![Highway Star (L)](screenshots/VirtuaNES%20-%20Highway%20Star%20(L).bmp)
 
-![alt tag](https://github.com/bubble2k16/emus3ds/blob/master/screenshots/VirtuaNES%20-%20Kirby's%20Adventure.bmp)
+![JJ Tobidase Daisakusen Part II (R)](screenshots/VirtuaNES%20-%20JJ%20Tobidase%20Daisakusen%20Part%20II%20(R).bmp)![JJ Tobidase Daisakusen Part II (L)](screenshots/VirtuaNES%20-%20JJ%20Tobidase%20Daisakusen%20Part%20II%20(L).bmp)
 
-![alt tag](https://github.com/bubble2k16/emus3ds/blob/master/screenshots/VirtuaNES%20-%20Legend%20of%20Link.bmp)
-
-![alt tag](https://github.com/bubble2k16/emus3ds/blob/master/screenshots/VirtuaNES%20-%20Rockman%204%20Minus%20Infinity.bmp)
-
-![alt tag](https://github.com/bubble2k16/emus3ds/blob/master/screenshots/VirtuaNES%20-%20Super%20Mario%20Bros%203.bmp)
+![Fuuun Shourin Ken Ankoku no Maou (R)](screenshots/VirtuaNES%20-%20Fuuun%20Shourin%20Ken%20Ankoku%20no%20Maou%20(R).bmp)![Fuuun Shourin Ken Ankoku no Maou (L)](screenshots/VirtuaNES%20-%20Fuuun%20Shourin%20Ken%20Ankoku%20no%20Maou%20(L).bmp)
 
 -------------------------------------------------------------------------------------------
 
 ## Change History
+
+*VirtuaNES 3D:*
+
+### v1.02-3D.1
+- Fixed build
+  - Adjusted header file references to support case-sensitive file systems
+  - Added romfs/.gitkeep file
+- Added Stereo 3D support for the following games:
+  - Attack Animal Gakuen
+  - Cosmic Epsilon
+  - Highway Star (Japanese release of Rad Racer)
+  - JJ: Tobidase Daisakusen Part II
+  - Falsion
+  - Famicom Grand Prix II: 3D Hot Rally
+  - Fuuun Shourin Ken: Ankoku no Maou
 
 *VirtuaNES:*
 
@@ -145,10 +161,6 @@ NOTE: If you enable a cheat, and then disable it, you may need to reset the game
 
 ## How to Build
 
-The current version can be built in two ways:
-
-###  libctru v1.0.0
-
 You will need:
 - devkitARM r45
 - libctru v1.0.0
@@ -164,3 +176,4 @@ Then build by using *make*.
 2. Authors of the Citra 3DS Emulator team. Without them, this project would have been extremely difficult.
 5. SG6000 for helping with debugging the nasty crashing bug.
 6. Fellow forummers on GBATemp for the bug reports and suggestions for improvements.
+7. bubble2k16 for porting to the Nintendo 3DS.
