@@ -174,8 +174,13 @@ Then build by using *make*.
 
 ## Credits
 
+From bubble2k16's words on his project:
+
 1. Norix team for the fantastic well-optimized VirtuaNES emulator
 2. Authors of the Citra 3DS Emulator team. Without them, this project would have been extremely difficult.
 5. SG6000 for helping with debugging the nasty crashing bug.
 6. Fellow forummers on GBATemp for the bug reports and suggestions for improvements.
-7. bubble2k16 for porting to the Nintendo 3DS.
+
+From kyuweftea on this Famicom 3D fork:
+
+1. bubble2k16 for porting VirtuaNES to the Nintendo 3DS and providing a solid base to build upon.
