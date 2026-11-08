@@ -56,6 +56,11 @@ To install, download and unpack the zip file from the [latest release](https://g
 
 *VirtuaNES 3D:*
 
+### v1.02-3D.2
+- Added stereo 3D support for patched games, including fan translations
+  - removed allowlist of the 7 official games
+  - added denylist of extension controllers that may interfere with Famicom 3D
+
 ### v1.02-3D.1
 - Fixed build
   - Adjusted header file references to support case-sensitive file systems
