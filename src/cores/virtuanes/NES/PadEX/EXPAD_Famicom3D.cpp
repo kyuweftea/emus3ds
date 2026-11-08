@@ -28,22 +28,3 @@ void EXPAD_Famicom3D::AdvanceFrame()
 		framesSinceEyeChange++;
 	}
 }
-
-void EXPAD_Famicom3D::SetSyncData( INT type, LONG data )
-{
-	if( type == 0 ) {
-		eyeRight = (data & 0x01) ? TRUE : FALSE;
-		framesSinceEyeChange = (BYTE)((data >> 1) & 0x0F);
-		if( framesSinceEyeChange > FAMICOM3D_ACTIVITY_FRAMES + 1 ) {
-			framesSinceEyeChange = FAMICOM3D_ACTIVITY_FRAMES + 1;
-		}
-	}
-}
-
-LONG EXPAD_Famicom3D::GetSyncData( INT type )
-{
-	if( type == 0 ) {
-		return (eyeRight ? 0x01 : 0x00) | ((LONG)framesSinceEyeChange << 1);
-	}
-	return 0;
-}

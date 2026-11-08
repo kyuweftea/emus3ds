@@ -20,8 +20,6 @@ public:
 	BOOL IsActive() const;
 	BOOL IsRightEye() const { return eyeRight; }
 	void AdvanceFrame();
-	void SetSyncData( INT type, LONG data );
-	LONG GetSyncData( INT type );
 
 protected:
 	BOOL eyeRight;

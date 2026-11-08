@@ -15,6 +15,7 @@
 // class prototypes
 class	NES;
 class	EXPAD;
+class	EXPAD_Famicom3D;
 
 class	PAD
 {
@@ -51,6 +52,7 @@ public:
 	BOOL	GetFamicom3DActive();
 	BOOL	GetFamicom3DRightEye();
 	void	AdvanceFamicom3DFrame();
+	void	ResetFamicom3DState();
 
 	BOOL	IsZapperMode() { return bZapperMode; };
 
@@ -112,6 +114,7 @@ protected:
 	NES*	nes;
 	// Extension Devices
 	EXPAD*	expad;
+	EXPAD_Famicom3D*	glasses;
 
 	// Frame Synchronized
 	BYTE	padbit[4];
@@ -138,6 +141,8 @@ protected:
 	void	NsfSub();
 
 	BYTE	nsfbit;
+
+	static BOOL	ExControllerUsesOut1( INT type );
 private:
 };
 
@@ -164,4 +169,3 @@ private:
 #include "PadEX/EXPAD_Gyromite.h"
 
 #endif	// !__PAD_INCLUDED__
-

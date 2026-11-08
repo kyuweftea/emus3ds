@@ -27,6 +27,7 @@ PAD::PAD( NES* parent ) : nes( parent )
 {
 	excontroller_select = 0;
 	expad = NULL;
+	glasses = new EXPAD_Famicom3D( nes );
 	bStrobe = FALSE;
 	bSwapButton = FALSE;
 	bSwapPlayer = FALSE;
@@ -46,12 +47,14 @@ PAD::~PAD()
 	//DirectDraw.SetZapperDrawMode( FALSE );
 
 	DELETEPTR( expad );
+	DELETEPTR( glasses );
 }
 
 void	PAD::Reset()
 {
 	pad1bit = pad2bit = 0;
 	bStrobe = FALSE;
+	glasses->Reset();
 
 //	if( !bZapperMode ) {
 //		bZapperMode = FALSE;
@@ -198,26 +201,13 @@ void	PAD::Reset()
 //		SetExController( EXCONTROLLER_STACKUP );
 //	}
 
-	// Famicom 3D System cartridge games.
-	if( excontroller_select == EXCONTROLLER_NONE &&
-		(crc == 0x7D55CF29		// Attack Animal Gakuen
-		 || crc == 0xAB4AC985	// Cosmic Epsilon
-		 || crc == 0x02589598	// Highway Star
-		 || crc == 0xB39A3F5B) ) { // JJ: Tobidase Daisakusen Part II
-		SetExController( EXCONTROLLER_FAMICOM3D );
-	}
-
-	// Tobidase Daisakusen (J), an FDS game, uses anaglyph stereo, not the Famicom 3D System.
-	if( excontroller_select == EXCONTROLLER_NONE && nes->rom->GetMapperNo() == 20 &&
-		((nes->rom->GetMakerID() == 0xA4 && nes->rom->GetGameID() == 0x46414C20) // Falsion
-		 || (nes->rom->GetMakerID() == 0x01 && nes->rom->GetGameID() == 0x54445245) // Famicom Grand Prix II: 3D Hot Rally
-		 || (nes->rom->GetMakerID() == 0x0A && nes->rom->GetGameID() == 0x53414D20)) ) { // Fuuun Shourin Ken: Ankoku no Maou
-		SetExController( EXCONTROLLER_FAMICOM3D );
-	}
 }
 
 void	PAD::SetExController( INT type )
 {
+	if( type == EXCONTROLLER_FAMICOM3D ) {
+		type = EXCONTROLLER_NONE;
+	}
 	excontroller_select = type;
 
 	DELETEPTR( expad );
@@ -292,10 +282,6 @@ void	PAD::SetExController( INT type )
 		case	EXCONTROLLER_GYROMITE:
 			expad = new EXPAD_Gyromite( nes );
 			break;
-		case	EXCONTROLLER_FAMICOM3D:
-			expad = new EXPAD_Famicom3D( nes );
-			break;
-
 // Buggy:(
 //		case	EXCONTROLLER_STACKUP:
 //			expad = new EXPAD_StackUp( nes );
@@ -312,20 +298,49 @@ void	PAD::SetExController( INT type )
 
 BOOL PAD::GetFamicom3DActive()
 {
-	return excontroller_select == EXCONTROLLER_FAMICOM3D && expad
-		? ((EXPAD_Famicom3D*)expad)->IsActive() : FALSE;
+	return ExControllerUsesOut1( excontroller_select ) ? FALSE : glasses->IsActive();
 }
 
 BOOL PAD::GetFamicom3DRightEye()
 {
-	return excontroller_select == EXCONTROLLER_FAMICOM3D && expad
-		? ((EXPAD_Famicom3D*)expad)->IsRightEye() : FALSE;
+	return glasses->IsRightEye();
 }
 
 void PAD::AdvanceFamicom3DFrame()
 {
-	if( excontroller_select == EXCONTROLLER_FAMICOM3D && expad ) {
-		((EXPAD_Famicom3D*)expad)->AdvanceFrame();
+	glasses->AdvanceFrame();
+}
+
+void PAD::ResetFamicom3DState()
+{
+	glasses->Reset();
+}
+
+BOOL PAD::ExControllerUsesOut1( INT type )
+{
+	// This list follows hardware behavior, not whether the emulated class reads OUT1.
+	switch( type ) {
+		case	EXCONTROLLER_KEYBOARD:
+			// Keyboard column select.
+		case	EXCONTROLLER_SUPOR_KEYBOARD:
+			// Keyboard scan select.
+		case	EXCONTROLLER_FAMILYTRAINER_A:
+			// Mat select.
+		case	EXCONTROLLER_FAMILYTRAINER_B:
+			// Mat select.
+		case	EXCONTROLLER_MAHJANG:
+			// Button-matrix select.
+		case	EXCONTROLLER_OEKAKIDS_TABLET:
+			// Tablet serial clock/data shift.
+		case	EXCONTROLLER_EXCITINGBOXING:
+			// Mat select.
+		case	EXCONTROLLER_TURBOFILE:
+			// Reset serial address.
+		case	EXCONTROLLER_HYPERSHOT:
+			// Player select on real hardware.
+			return TRUE;
+		default:
+			return FALSE;
 	}
 }
 
@@ -391,10 +406,6 @@ DWORD	data = 0;
 		case	EXCONTROLLER_MAHJANG:
 			data = (DWORD)expad->GetSyncData( 0 );
 			break;
-		case	EXCONTROLLER_FAMICOM3D:
-			data = (DWORD)expad->GetSyncData( 0 );
-			break;
-
 		default:
 			break;
 	}
@@ -447,9 +458,6 @@ void	PAD::SetSyncExData( DWORD data )
 			expad->SetSyncData( 0, (LONG)data );
 			break;
 		case	EXCONTROLLER_MAHJANG:
-			expad->SetSyncData( 0, (LONG)data );
-			break;
-		case	EXCONTROLLER_FAMICOM3D:
 			expad->SetSyncData( 0, (LONG)data );
 			break;
 		default:
@@ -693,6 +701,7 @@ void	PAD::Write( WORD addr, BYTE data )
 		if( expad ) {
 			expad->Write4016( data );
 		}
+		glasses->Write4016( data );
 	}
 	if( addr == 0x4017 ) {
 		if( expad ) {

@@ -2294,6 +2294,7 @@ has_error:
 		return FALSE;
 	}
 
+	pad->ResetFamicom3DState();
 	return	TRUE;
 }
 
